@@ -31,6 +31,9 @@
 
 }}">>Home</a>
 
+                    <a class="nav-link active" href="{{ route('product.index')
+
+}}">Product</a>
                     <a class="nav-link active" href="{{ route('home.about')
 
 }}">About</a>
