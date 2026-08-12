@@ -28,4 +28,25 @@ class ProductController extends Controller
         $viewData['product'] = $product;
         return view("product.show")->with('viewData', $viewData);
     }
+
+    public function store(Request $request)
+    {
+        $name = $request->input('product_name');
+        $price = $request->input('product_price');
+
+        $imagepath = "";
+        if ($request->hasFile('product_image')) {
+            $file = $request->file('product_image');
+            $imagepath = $file->store('product', 'public');
+        }
+
+        return redirect()->route('product.create')
+            ->with('success', "Đã thêm sản phẩm: $name với giá $price VNĐ")
+            ->with('image_path', $imagepath);
+    }
+
+    public function create()
+    {
+        return view('product.create');
+    }
 }
