@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreProductRequest;
 
 class ProductController extends Controller
 {
@@ -12,17 +13,19 @@ class ProductController extends Controller
 
     public function index()
     {
-       // Lấy sản phẩm mới nhất, phân trang mỗi trang 10 sản phẩm
+        // Lấy sản phẩm mới nhất, phân trang mỗi trang 10 sản phẩm
         // Eloquent tự động bỏ qua các sản phẩm đã bị xóa tạm (Soft Deleted)
         $products = Product::latest()->paginate(10);
-        return view('products.index', compact('products'));
+
+        // return view('products.index', compact('products'));
+        return view('admin.index', compact('products'));
     }
-        /**
-    * 2. Giao diện Form thêm mới
-    */
+    /**
+     * 2. Giao diện Form thêm mới
+     */
     public function create()
     {
-        return view('product.create');
+        return view('admin.create');
     }
 
     public function show($id)
@@ -35,8 +38,8 @@ class ProductController extends Controller
         return view("product.show")->with('viewData', $viewData);
     }
     /**
-    * 3. Xử lý lưu sản phẩm mới vào CSDL
-    */
+     * 3. Xử lý lưu sản phẩm mới vào CSDL
+     */
     public function store(StoreProductRequest $request)
     {
         // $request->validated() lấy ra mảng dữ liệu đã vượt qua bộ lọc an toàn
@@ -46,16 +49,16 @@ class ProductController extends Controller
     }
 
     /**
-    * 4. Giao diện Form chỉnh sửa
-    */
+     * 4. Giao diện Form chỉnh sửa
+     */
     public function edit(string $id)
     {
         $product = Product::findOrFail($id);
         return view('products.edit', compact('product'));
     }
     /**
-    * 5. Xử lý cập nhật dữ liệu sản phẩm
-    */
+     * 5. Xử lý cập nhật dữ liệu sản phẩm
+     */
     public function update(StoreProductRequest $request, string $id)
     {
         $product = Product::findOrFail($id);
@@ -63,8 +66,8 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công!');
     }
     /**
-    * 6. Xóa tạm thời sản phẩm (Đưa vào thùng rác)
-    */
+     * 6. Xóa tạm thời sản phẩm (Đưa vào thùng rác)
+     */
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
@@ -73,16 +76,17 @@ class ProductController extends Controller
     }
 
     /**
-    * 7. Hiển thị danh sách sản phẩm trong Thùng rác
-    */
-    public function trash(){
+     * 7. Hiển thị danh sách sản phẩm trong Thùng rác
+     */
+    public function trash()
+    {
         // onlyTrashed() chỉ lấy ra các bản ghi có deleted_at KHÁC null
         $products = Product::onlyTrashed()->latest()->paginate(10);
-        return view('products.trash', compact('products'));
+        return view('admin.trash', compact('products'));
     }
     /**
-    * 8. Khôi phục sản phẩm từ thùng rác
-    */
+     * 8. Khôi phục sản phẩm từ thùng rác
+     */
     public function restore(string $id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
@@ -90,8 +94,8 @@ class ProductController extends Controller
         return redirect()->route('products.trash')->with('success', 'Khôi phục sản phẩm thành công!');
     }
     /**
-    * 9. Xóa vĩnh viễn sản phẩm khỏi CSDL
-    */
+     * 9. Xóa vĩnh viễn sản phẩm khỏi CSDL
+     */
     public function forceDelete(string $id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
