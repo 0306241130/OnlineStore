@@ -15,7 +15,7 @@ class ProductController extends Controller
     {
         // Lấy sản phẩm mới nhất, phân trang mỗi trang 10 sản phẩm
         // Eloquent tự động bỏ qua các sản phẩm đã bị xóa tạm (Soft Deleted)
-        $products = Product::latest()->paginate(10);
+        $products = Product::with('category')->latest()->paginate(10);
 
         // return view('products.index', compact('products'));
         return view('admin.index', compact('products'));

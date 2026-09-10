@@ -22,6 +22,7 @@
             <th>ID</th>
             <th>Tên sản phẩm</th>
             <th>Giá</th>
+            <th>Loại Sản Phẩm</th>
             <th>Số lượng</th>
             <th>Hành động</th>
         </tr>
@@ -32,6 +33,7 @@
             <td>{{ $product->id }}</td>
             <td>{{ $product->name }}</td>
             <td>{{ number_format($product->price) }} đ</td>
+            <td>{{$product->category?->name ?? "chưa phân loại"}}</td>
             <td>{{ $product->stock_quantity }}</td>
             <td>
                 <a href="{{ route('products.edit', ['product' => $product->id]) }}"
