@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -25,6 +26,7 @@ class ProductController extends Controller
      */
     public function create()
     {
+
         return view('admin.create');
     }
 
@@ -40,12 +42,24 @@ class ProductController extends Controller
     /**
      * 3. Xử lý lưu sản phẩm mới vào CSDL
      */
-    public function store(StoreProductRequest $request)
+    public function store(Request $request)
     {
-        // $request->validated() lấy ra mảng dữ liệu đã vượt qua bộ lọc an toàn
-        Product::create($request->validated());
-        // Chuyển hướng về trang danh sách kèm thông báo Flash Session
-        return redirect()->route('products.index')->with('success', 'Thêm sản phẩm thành công!');
+        // Validate dữ liệu...
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+        ]);
+        // Lấy thông tin user đang đăng nhập hiện tại
+
+        $currentUser = auth()->user();
+        // Thêm sản phẩm kèm theo user_id
+        Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'user_id' => $currentUser->id, // Tự động gán ID người tạo
+        ]);
+        return redirect()->route('products.index')->with('success', 'Đã thêm
+    sản phẩm thành công!');
     }
 
     /**

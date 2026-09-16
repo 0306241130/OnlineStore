@@ -17,7 +17,8 @@ class Product extends Model
         'price',
         'description',
         'category_id',
-        'stock_quantity'
+        'stock_quantity',
+        'user_id'
     ];
 
     public function getId()

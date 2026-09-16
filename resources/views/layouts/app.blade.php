@@ -1,72 +1,39 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-        rel="stylesheet" crossorigin="anonymous" />
-    <link href="{{asset('/css/app.css')}}" rel="stylesheet" />
-    <title>@yield('title', 'Online Store')</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
-    <!-- header -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary py-4">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home.index') }}">Online
+<body class="font-sans antialiased">
+    <div class="min-h-screen bg-gray-100">
+        @include('layouts.navigation')
 
-                Store</a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-
-                data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
-                aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link active" href="{{ route('home.index')
-
-}}">>Home</a>
-
-                    <a class="nav-link active" href="{{ route('products.index')
-
-}}">Product</a>
-                    <a class="nav-link active" href="{{ route('home.about')
-
-}}">About</a>
-                </div>
+        <!-- Page Heading -->
+        @isset($header)
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                {{ $header }}
             </div>
-        </div>
-    </nav>
-    <header class="masthead bg-primary text-white text-center py-4">
-        <div class="container d-flex align-items-center flex-column">
-            <h2>@yield('subtitle', 'Online Store - Laravel Framework')</h2>
-        </div>
-    </header>
-    <!-- header -->
-    <div class="container my-4">
-        @yield('content')
-    </div>
-    <!-- footer -->
-    <div class="copyright py-4 text-center text-white">
-        <div class="container">
-            <small> Copyright - <a class="text-reset fw-bold text-decoration-none"
+        </header>
+        @endisset
 
-                    target="_blank" href="https://twitter.com/">
-
-                    NĐDuy
-                </a> - <b>CKC</b>
-            </small>
-        </div>
+        <!-- Page Content -->
+        <main>
+            {{ $slot }}
+        </main>
     </div>
-    <!-- footer -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous">
-    </script>
 </body>
 
 </html>
