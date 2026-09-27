@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+// BỔ SUNG 2 THƯ VIỆN NÀY ĐỂ GỬI MAIL
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeRegisteredUserMail;
 
 class RegisteredUserController extends Controller
 {
@@ -32,7 +35,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -40,9 +43,17 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'user'
         ]);
 
         event(new Registered($user));
+
+        // ==========================================
+        // 2. PHÁT LỆNH GỬI MAIL CHÀO MỪNG
+        // Do WelcomeRegisteredUserMail có implements ShouldQueue,
+        // hàm send() tự động chuyển thành queue(), đẩy vào DB chứ không làm treo Web.
+        // ==========================================
+        Mail::to($user->email)->send(new WelcomeRegisteredUserMail($user));
 
         Auth::login($user);
 

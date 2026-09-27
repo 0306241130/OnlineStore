@@ -5,7 +5,12 @@
     <h2>Quản lý sản phẩm</h2>
     <div>
 
-        <a href="{{ route('products.create') }}" class="btn btn-primary">Thêm sản phẩm</a>
+        <!-- NÚT THÊM SẢN PHẨM -->
+        <!-- Sử dụng class Model vì hàm create không cần đối tượng cụ thể -->
+        @can('create', App\Models\Product::class)
+        <a href="{{ route('products.create') }}" class="btn btn-success mb-3">+
+            Thêm Sản Phẩm Mới</a>
+        @endcan
 
         <a href="{{ route('products.trash') }}" class="btn btn-warning">Thùng rác</a>
 
@@ -38,13 +43,14 @@
             <td>
                 <a href="{{ route('products.edit', ['product' => $product->id]) }}"
                     class="btn btn-sm btn-info">Sửa</a>
-                <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tạm sản phẩm này?')">
+                @can('delete', $product)
+                <form action="{{ route('products.destroy',$product->id) }}" method="POST" class="d-inline">
                     @csrf
+
                     @method('DELETE')
-
-                    <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Chắc chắn xóa?')">Xóa</button>
                 </form>
+                @endcan
             </td>
         </tr>
         @endforeach

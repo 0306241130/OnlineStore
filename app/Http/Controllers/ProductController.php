@@ -6,7 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Gate; // BẮT BUỘC IMPORT GATE
 class ProductController extends Controller
 {
     //
@@ -26,6 +26,8 @@ class ProductController extends Controller
      */
     public function create()
     {
+        // Kiểm tra xem User có quyền tạo không? Nếu không tự động ném ra lỗi 403
+        Gate::authorize('create', Product::class);
 
         return view('admin.create');
     }
@@ -44,6 +46,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', Product::class);
         // Validate dữ liệu...
         $request->validate([
             'name' => 'required|string|max:255',
@@ -65,26 +68,28 @@ class ProductController extends Controller
     /**
      * 4. Giao diện Form chỉnh sửa
      */
-    public function edit(string $id)
+    public function edit(Product $product)
     {
-        $product = Product::findOrFail($id);
+        Gate::authorize('update', $product);
+
         return view('products.edit', compact('product'));
     }
     /**
      * 5. Xử lý cập nhật dữ liệu sản phẩm
      */
-    public function update(StoreProductRequest $request, string $id)
+    public function update(StoreProductRequest $request, Product $product)
     {
-        $product = Product::findOrFail($id);
+        Gate::authorize('update', $product);
         $product->update($request->validated());
         return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công!');
     }
     /**
      * 6. Xóa tạm thời sản phẩm (Đưa vào thùng rác)
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        $product = Product::findOrFail($id);
+        Gate::authorize('delete', $product);
+
         $product->delete(); // Do có SoftDeletes, hàm này sẽ nạp ngày vào cột deleted_at
         return redirect()->route('products.index')->with('success', 'Đã chuyển sản phẩm vào thùng rác!');
     }
@@ -101,18 +106,18 @@ class ProductController extends Controller
     /**
      * 8. Khôi phục sản phẩm từ thùng rác
      */
-    public function restore(string $id)
+    public function restore(Product $product)
     {
-        $product = Product::onlyTrashed()->findOrFail($id);
+        Gate::authorize('restore', $product);
         $product->restore(); // Đặt cột deleted_at về lại null
         return redirect()->route('products.trash')->with('success', 'Khôi phục sản phẩm thành công!');
     }
     /**
      * 9. Xóa vĩnh viễn sản phẩm khỏi CSDL
      */
-    public function forceDelete(string $id)
+    public function forceDelete(Product $product)
     {
-        $product = Product::onlyTrashed()->findOrFail($id);
+        Gate::authorize('restore', $product);
         $product->forceDelete(); // Xóa hoàn toàn bản ghi khỏi ổ đĩa
         return redirect()->route('products.trash')->with('success', 'Đã xóa  vĩnh viễn sản phẩm khỏi hệ thống!');
     }
